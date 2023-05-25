@@ -29,6 +29,7 @@ create table Pagamento(
 CódigoPagamento int Primary Key auto_increment,
 ValorPago double(9,3) not null,
 DataPag Date not null,
+Dívida double(9,3),
 CódigoClienteContaPag int not null,
 foreign key(CódigoClienteContaPag) references Cliente(CódigoCliente),
 Desconto varchar(10)
@@ -94,7 +95,7 @@ Values(1, "(21)95423-5567","Minions@gmail.com","AV. Mem de Sá, RJ "),
 insert into Estoque(QuantidadeEstoque, Descrição, Seção)
 Values(10,"Motos Elétricas da GWS","GWS"),
       (5,"Motos Elétricas da Super Soco","Super Soco"),
-	  (2,"Motos Elétricas da EVS","EVS");
+	  (8,"Motos Elétricas da EVS","EVS");
 
 insert into Produto(CódigoEstoqueProd,NomeProduto,Preço,Marca)
 values(3,"Voltz EVS", 19.990,"EVS"),
@@ -108,9 +109,9 @@ values(3,91.980,str_to_date('20/09/2023', '%d/%m/%Y' ),0),
        (2,14.900,str_to_date('23/05/2023', '%d/%m/%Y' ),0);
       
 insert into Venda(QuantidadeVenda, CódigoEstoqueVenda, ValorVenda, DataVenda, CódigoPagamento)
-values(2,"2", '91.980',STR_TO_DATE('21/03/2021', '%d/%m/%Y') ,1),
+values(2,"2", '45.990',STR_TO_DATE('21/03/2021', '%d/%m/%Y') ,1),
       (1,"1", 133.000, str_to_date('12/03/2023', '%d/%m/%Y' ),3),
-      (4,"3", 79.960, str_to_date('21/05/2022', '%d/%m/%Y' ),2),
+      (4,"3", 19.990, str_to_date('21/05/2022', '%d/%m/%Y' ),2),
       (1,"3", '19.990',STR_TO_DATE('22/05/2023', '%d/%m/%Y') ,4);
 
 insert into ProdutoVenda(CódigoProduto, CódigoVenda)
@@ -124,6 +125,7 @@ Select Nome, CPF, TelefoneCliente, EmailCliente, EndereçoCliente from Contato
 Inner Join Cliente
 On(Cliente.CódigoCliente = Contato.CódigoClienteConta);
 
+
 /*Inner Join para Consultar as Contas Pagas pelos Clientes*/
 Select Nome, CPF,ValorPago, Datapag, Desconto from Cliente
 Inner Join Pagamento
@@ -135,6 +137,24 @@ Inner Join Estoque
 On(Produto.CódigoEstoqueProd = Estoque.CódigoEstoque);
 
 /*Inner Join para Consultar os Produtos que foram Vendidos*/
-Select NomeProduto, Preço, Marca,ValorVenda,DataVenda,QuantidadeVenda from Produto
+Select NomeProduto, Preço, Marca,(ValorVenda * QuantidadeVenda) as  ValorVenda,DataVenda,QuantidadeVenda from Produto
 Inner join Venda
 On(Produto.CódigoEstoqueProd = Venda.CódigoEstoqueVenda);
+
+/*Inner Join para Consultar quanto cada Cliente deve */
+SELECT Cliente.Nome, Cliente.CPF, Venda.QuantidadeVenda, Venda.ValorVenda * Venda.QuantidadeVenda as ValorVenda,  DataVenda, Pagamento.ValorPago, Venda.ValorVenda * Venda.QuantidadeVenda - Pagamento.ValorPago AS Divida, Pagamento.Datapag, Pagamento.Desconto
+FROM Pagamento
+INNER JOIN Cliente 
+On(Cliente.CódigoCliente= Pagamento.CódigoClienteContaPag)
+INNER JOIN Venda
+ON (Venda.CódigoPagamento = Pagamento.CódigoPagamento);
+
+/*Inner Join para  Consultar as Vendas que foram Pagas*/
+Select QuantidadeVenda,ValorVenda * QuantidadeVenda as ValorVenda, DataVenda, ValorPago, Datapag,desconto from Pagamento
+INNER JOIN Venda
+ON (Venda.CódigoPagamento = Pagamento.CódigoPagamento);
+
+/*inner Join para Consultar se tem o Estoque necessário pra Venda */
+Select QuantidadeVenda,ValorVenda * QuantidadeVenda as ValorVenda, DataVenda, QuantidadeEstoque, QuantidadeEstoque - QuantidadeVenda as EstoquePósVenda,Descrição, Seção from Venda
+Inner Join Estoque
+On(Estoque.CódigoEstoque = Venda.CódigoEstoqueVenda);
