@@ -109,9 +109,14 @@ Values(10,"Motos Elétricas da GWS","GWS"),
 	  (8,"Motos Elétricas da EVS","EVS");
 
 insert into Produto(CódigoEstoqueProd,NomeProduto,Preço,Marca)
-values(3,"Voltz EVS", 19.990,"EVS"),
-      (1,"GWS K14RS", 133.000,"GWS"),
-      (2,"Super Soco TC Max", 45.990,"Super Soco");
+values(3,"EVS EV1", 19.992,"EVS"),
+      (1,"GWS K14RS", 133.954,"GWS"),
+      (2,"Super Soco TC Max", 45.995,"Super Soco"),
+	  (3,"EVS Work", 20.395,"EVS"),
+	  (2,"Super Soco TC Wanderer", 49.245,"Super Soco"),
+	  (1,"GWS SE 1", 13.995,"GWS"),
+	  (3,"EVS Voltz", 13.995,"EVS"),
+	  (1,"GWS K4000RP", 145.995,"GWS");
 
 insert into Pagamento(CódigoClienteContaPag, ValorPago, Datapag, Desconto)
 values(3,91.980,str_to_date('20/09/2023', '%d/%m/%Y' ),0),
